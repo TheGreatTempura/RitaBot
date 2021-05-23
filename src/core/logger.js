@@ -10,11 +10,6 @@ const auth = require("./auth");
 const colors = require("./colors").get;
 const spacer = "​                                                          ​";
 
-const hook = new discord.WebhookClient(
-   auth.loggerWebhookID,
-   auth.loggerWebhookToken
-);
-
 // --------------------
 // Log data to console
 // --------------------
@@ -38,6 +33,10 @@ const devConsole = function devConsole (data)
 const hookSend = function hookSend (data)
 {
 
+   const hook = new discord.WebhookClient(
+      process.env.DISCORD_DEBUG_WEBHOOK_ID,
+      process.env.DISCORD_DEBUG_WEBHOOK_TOKEN
+   );
    const embed = new discord.MessageEmbed({
       "color": colors(data.color),
       "description": data.msg,
@@ -192,10 +191,11 @@ const logLeave = function logLeave (guild)
 // Logger code
 // ------------
 
-module.exports = function run (type, data, subtype = null, id = "Unknown")
+// eslint-disable-next-line default-param-last
+module.exports = function run (type, data, subtype = null, id)
 {
 
-   if (hook.id === undefined)
+   if (process.env.DISCORD_DEBUG_WEBHOOK_ID === undefined)
    {
 
       return;
@@ -224,7 +224,7 @@ module.exports = function run (type, data, subtype = null, id = "Unknown")
 
          {
 
-            console.log("Has guild");
+            // console.log("Has guild");
             const id = data.message.guild.name;
             return logTypes[type](
                data,
@@ -234,11 +234,11 @@ module.exports = function run (type, data, subtype = null, id = "Unknown")
 
          }
 
-         console.log("Has Message");
+         // console.log("Has Message");
 
       }
 
-      console.log("Has");
+      // console.log("Has");
 
       return logTypes[type](
          data,
